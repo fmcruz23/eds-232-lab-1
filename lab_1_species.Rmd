@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 if (!require(librarian)){
   install.packages("librarian")
   library(librarian)
-}
+} 
 librarian::shelf(
   dismo, dplyr, DT, ggplot2, here, htmltools, leaflet, mapview, purrr, raster, readr, rgbif, rgdal, rJava, sdmpredictors, sf, spocc, tidyr, geojsonio)
 select <- dplyr::select # overwrite raster::select
@@ -33,29 +33,40 @@ obs_csv <- file.path(dir_data, "obs.csv")
 obs_geo <- file.path(dir_data, "obs.geojson")
 redo    <- FALSE
 
-# get species occurrence data from GBIF with coordinates
-(res <- spocc::occ(
-  query = 'Panthera uncia', 
-  from = 'gbif', has_coords = T, limit = 10000))
+if (!file.exists(obs_geo) | redo){
+  # get species occurrence data from GBIF with coordinates
+  (res <- spocc::occ(
+    query = 'Giraffa',
+    #query = 'Panthera uncia', 
+    from = 'gbif', has_coords = T, limit = 10000))
+  
+  # extract data frame from result
+  df <- res$gbif$data[[1]] 
+  readr::write_csv(df, obs_csv)
+  
+  # convert to points of observation from lon/lat columns in data frame
+  obs <- df %>% 
+    sf::st_as_sf(
+      coords = c("longitude", "latitude"),
+      crs = st_crs(4326)) %>% 
+    select(prov, key) # save space (joinable from obs_csv)
+  sf::write_sf(obs, obs_geo, delete_dsn=T)
+}
+obs <- sf::read_sf(obs_geo)
+nrow(obs) # number of rows
 
 
-```
-
-```{r}
-# extract data frame from result
-df <- res$gbif$data[[1]] 
-nrow(df) # number of rows
 ```
 
 ```{r}
 # convert to points of observation from lon/lat columns in data frame
-obs <- df %>% 
-  sf::st_as_sf(
-    coords = c("longitude", "latitude"),
-    crs = st_crs(4326))
+# obs <- df %>% 
+#  sf::st_as_sf(
+#    coords = c("longitude", "latitude"),
+ #   crs = st_crs(4326))
 
-readr::write_csv(df, obs_csv)
-geojson_write(obs, obs_geo)
+#readr::write_csv(df, obs_csv)
+#geojson_write(obs, obs_geo)
 
 ```
 
@@ -89,6 +100,7 @@ env_datasets_vec <- c("WorldClim", "ENVIREM")
 env_layers <- sdmpredictors::list_layers(env_datasets_vec)
 DT::datatable(env_layers)
 ```
+
 ```{r}
 # choose layers after some inspection and perhaps consulting literature
 env_layers_vec <- c("WC_alt", "WC_bio1", "WC_bio2", "ER_tri", "ER_topoWet")
@@ -100,6 +112,7 @@ env_stack <- load_layers(env_layers_vec)
 # mapview(env_stack, hide = T) # makes the html too big for Github
 plot(env_stack, nc=2)
 ```
+
 ```{r}
 obs_hull_geo  <- file.path(dir_data, "obs_hull.geojson")
 env_stack_grd <- file.path(dir_data, "env_stack.grd")
@@ -273,11 +286,12 @@ summary(mdl)
 ```
 
 ```{r}
-y_predict <- predict(mdl, pts_env, type="response")
-y_true    <- pts_env$present
+y_predict <- predict(mdl, d, type="response")
+y_true    <- d$present
 
 range(y_predict)
 ```
+
 ```{r}
 range(y_true)
 ```
@@ -298,7 +312,7 @@ range(y_predict)
 
 ```{r}
 # show term plots
-termplot(mdl, partial.resid = TRUE, se = TRUE, main = F)
+termplot(mdl, partial.resid = TRUE, se = TRUE, main = F, ylim = "free")
 ```
 
 ## Generalized Additive Model 
@@ -325,7 +339,10 @@ plot(mdl, scale=0)
 librarian::shelf(
   maptools, sf)
 
+mdl_maxent_rds <- file.path(dir_data, "mdl_maxent.rds")
+
 # show version of maxent
+if (!interactive())
 maxent()
 ```
 
@@ -339,14 +356,16 @@ plot(env_stack, nc=2)
 
 ```{r}
 # get presence-only observation points (maxent extracts raster values for you)
-# obs_geo <- file.path(dir_data, "obs.geojson")
-obs_geo <- "myfile.geojson"
+obs_geo <- file.path(dir_data, "obs.geojson")
 obs_sp <- read_sf(obs_geo) %>% 
   sf::as_Spatial() # maxent prefers sp::SpatialPoints over newer sf::sf class
 
 # fit a maximum entropy model
-mdl <- maxent(env_stack, obs_sp)
-
+if (!file.exists(mdl_maxent_rds)){
+  mdl <- maxent(env_stack, obs_sp)
+  readr::write_rds(mdl, mdl_maxent_rds)
+}
+mdl <- read_rds(mdl_maxent_rds)
 ```
 
 ```{r}
