@@ -23,7 +23,7 @@ select <- dplyr::select # overwrite raster::select
 set.seed(42)
 
 # directory to store data
-dir_data <- here("data/sdm")
+dir_data <- here("data/sdm") 
 dir.create(dir_data, showWarnings = F)
 ```
 
@@ -31,7 +31,7 @@ dir.create(dir_data, showWarnings = F)
 ```{r}
 obs_csv <- file.path(dir_data, "obs.csv")
 obs_geo <- file.path(dir_data, "obs.geojson")
-redo    <- FALSE
+redo    <- TRUE
 
 if (!file.exists(obs_geo) | redo){
   # get species occurrence data from GBIF with coordinates
@@ -41,7 +41,12 @@ if (!file.exists(obs_geo) | redo){
     from = 'gbif', has_coords = T, limit = 10000))
   
   # extract data frame from result
-  df <- res$gbif$data[[1]] 
+  # df <- res$gbif$data[[1]]  # from Ben 
+  df <- res$gbif$data[[1]] %>% 
+    filter(longitude > -26.41,
+           longitude < 54.98,
+           latitude > -36.21,
+           latitude < 38.65) # filter for just the African continent 
   readr::write_csv(df, obs_csv)
   
   # convert to points of observation from lon/lat columns in data frame
@@ -54,8 +59,6 @@ if (!file.exists(obs_geo) | redo){
 }
 obs <- sf::read_sf(obs_geo)
 nrow(obs) # number of rows
-
-
 ```
 
 ```{r}
