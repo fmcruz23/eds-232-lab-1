@@ -41,7 +41,7 @@ if (!file.exists(obs_geo) | redo){
     from = 'gbif', has_coords = T, limit = 10000))
   
   # extract data frame from result
-  # df <- res$gbif$data[[1]]  # from Ben 
+  #df <- res$gbif$data[[1]]  # from Ben 
   df <- res$gbif$data[[1]] %>% 
     filter(longitude > -26.41,
            longitude < 54.98,
@@ -77,6 +77,12 @@ nrow(obs) # number of rows
 # show points on map
 mapview::mapview(obs, map.types = "Stamen.Terrain")
 ```
+Question 1. How many observations total are in GBIF for your species? (Hint: ?occ)
+**There are 9,225 giraffe observations in GBIF, filtering for observations on the African continent. Before filtering, there were 9,300 observations.**
+
+Question 2. Do you see any odd observations, like marine species on land or vice versa? If so, please see the Data Cleaning and explain what you did to fix or remove these points.
+**I filtered my observations to those appearing on the African continent. There are no odd observations. All of the points are on land.**
+
 
 ## Get Environmental Data 
 ```{r}
