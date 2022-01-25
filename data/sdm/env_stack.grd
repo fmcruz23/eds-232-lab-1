@@ -1,25 +1,25 @@
 [general]
 creator=R package 'raster'
-created=2022-01-09 17:33:27
+created=2022-01-25 07:01:52
 [georeference]
-nrows=1041
-ncols=3146
-xmin=-122.666666666667
-ymin=-34.5833333333333
-xmax=139.5
-ymax=52.1666666666667
+nrows=869
+ncols=690
+xmin=-16.9166666666667
+ymin=-34.1666666666667
+xmax=40.5833333333333
+ymax=38.25
 projection=+proj=longlat +datum=WGS84 +no_defs
 [data]
 datatype=FLT4S
 byteorder=little
 nbands=5
 bandorder=BIL
-minvalue=-415:-13.8999996185303:0.899999976158142:0:6.15000009536743
-maxvalue=6485:31.6000003814697:21.2999992370605:475.519989013672:16.0599994659424
+minvalue=-415:2.20000004768372:4.5:-1:6.86999988555908
+maxvalue=4441:30.7000007629395:20.7000007629395:0.639999985694885:15.9200000762939
 nodatavalue=-3.4e+38
 [legend]
 legendtype=
 values=
 color=
 [description]
-layername=WC_alt:WC_bio1:WC_bio2:ER_tri:ER_topoWet
+layername=WC_alt:WC_bio1:WC_bio2:ER_climaticMoistureIndex:ER_topoWet
