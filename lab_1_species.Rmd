@@ -396,7 +396,7 @@ response(mdl)
 
 Question: Which Maxent environmental variables, and even range of values, seem to contribute most towards presence (closer to 1 response) and how might this differ from the GAM results?
 
-**ER_climaticMoistureIndex and WC_bio1 seem to contribute the most towards giraffe presence in the maxent model. This is different from the GAM results because while it seemed like ER_climaticMoistureIndex did influence presence, it was not as obvious how much it contributed to presence.**
+**ER_climaticMoistureIndex and WC_bio1 seem to contribute the most towards giraffe presence in the maxent model. This is different from the GAM results because while it seemed like ER_climaticMoistureIndex did influence presence, it was not as obvious how much it contributed to presence. In the term plots above we can see that giraffe presence is heavily influenced by ER_climaticMoistureIndex hovering right around 0. Additionally, WC_bio1 heavily contributed to giraffe presence for values around 20, peaking around 21.**
 
 
 ```{r}
