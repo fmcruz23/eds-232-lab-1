@@ -572,7 +572,7 @@ gridExtra::grid.arrange(p1, p2, nrow = 1)
 
 Question: How might variable importance differ between rpart and RandomForest in your model outputs?
 
-**need to answer**
+**Besides lat and lon, WC_bio1 and ER_climaticMoistureIndex are the two most important variables in both the rpart model and the random forest model. The bottom three variables are also the same in both models, with ER_topoWet being the least important variable.**
 
 # Lab 1d. Species Distribution Modeling - Evaluate Models
 
